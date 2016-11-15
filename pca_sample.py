@@ -83,7 +83,6 @@ X = preprocessing.scale(X)
 X_test = np.array(test_data[:,3:], dtype = float)
 X_test = preprocessing.scale(X_test)
 
-
 percent_covariance_to_account_for = 0.7
 component = 0
 tempSum = 0.0
@@ -112,8 +111,8 @@ while (True):
         component = component - 1
         break
     
-print tempSum
-print component
+print 'Temp Sum below threshold ==> ', tempSum
+print 'Number of PCs selected ==>', component
 
 selected_components = pca.components_[:,0:component]
 #print selected_components
@@ -126,11 +125,18 @@ features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[
 percent_dimension_reduction = 0.7
 
 features = sorted(features[:int(percent_dimension_reduction * len(features))])
+print 'Features Selected ===> '
+print
 print features
 
+#Data using new shortlisted features according threshold values
 X = X[:,features]
 X_test = X_test[:,features]
 
+print
+print X
+print
+print X_test
 """
 print pca.explained_variance_
 print
