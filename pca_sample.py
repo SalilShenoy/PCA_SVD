@@ -21,7 +21,24 @@ def make_sure_isnumber(n, row_index, col_index, compound, header, nan_locs):
         return float(n)  # else return the number as a float. 
     except ValueError:
         return 0.
-        
+
+def read_data(cr, data, data_header):
+    for row in cr:
+        data_row = row[3:]
+        new_data_row = np.arange(0)
+    
+        if len(data_header) == len(data_row): 
+            for col_index in range(len(data_header)):
+                    new_data_row = np.concatenate((new_data_row, [(make_sure_isnumber(data_row[col_index], \
+                                    row_index, col_index, row[0], data_header, nan_locs))])) 
+            
+            if len(data) > 0:
+                data = np.vstack((data, np.concatenate((row[:3], new_data_row))))
+            else:
+                data = np.concatenate((row[:3], new_data_row))
+                
+    return data
+                        
 #PCA
 def doPCA(data):
     print
@@ -40,28 +57,32 @@ try:
 except IOError:
     raise IOError("Problems locating or opening the .csv file named 'BRAF_train_moe_class.csv' were encountered.")
     
-header = np.array(cr.next()) 
+try:
+    test = csv.reader(open("BRAF_test_moe_class.csv"))
+except IOError:
+    raise IOError("Problems locating or opening the .csv file named 'BRAF_test_moe_class.csv' were encountered.")
+    
+header = np.array(cr.next())
+header_test = np.array(test.next())
+
 data = np.arange(0)
 data_header = header[3:]
+
+data_test= np.arange(0)
+data_test_header = header_test[3:]
+
 nan_locs = []   
 row_index = 0
 
-for row in cr:
-    data_row = row[3:]
-    new_data_row = np.arange(0)
-
-    if len(data_header) == len(data_row): 
-        for col_index in range(len(data_header)):
-                new_data_row = np.concatenate((new_data_row, [(make_sure_isnumber(data_row[col_index], \
-                                row_index, col_index, row[0], data_header, nan_locs))])) 
-            
-        if len(data) > 0:
-            data = np.vstack((data, np.concatenate((row[:3], new_data_row))))
-        else:
-            data = np.concatenate((row[:3], new_data_row))
+data = read_data(cr, data, data_header)
+test_data = read_data(test, data_test, data_test_header)
 
 X = np.array(data[:,3:], dtype = float)
 X = preprocessing.scale(X)
+
+X_test = np.array(test_data[:,3:], dtype = float)
+X_test = preprocessing.scale(X_test)
+
 
 percent_covariance_to_account_for = 0.7
 component = 0
@@ -107,6 +128,8 @@ percent_dimension_reduction = 0.7
 features = sorted(features[:int(percent_dimension_reduction * len(features))])
 print features
 
+X = X[:,features]
+X_test = X_test[:,features]
 
 """
 print pca.explained_variance_
