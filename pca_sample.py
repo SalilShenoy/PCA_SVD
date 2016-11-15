@@ -63,10 +63,15 @@ for row in cr:
 X = np.array(data[:,3:], dtype = float)
 X = preprocessing.scale(X)
 
+percent_covariance_to_account_for = 0.7
+component = 0
+tempSum = 0.0
+
 pca = doPCA(X)
+'''
 print
 print
-print pca.components_[0]
+print pca.explained_variance_ratio_
 print
 print
 print pca.explained_variance_ratio_.shape
@@ -75,6 +80,35 @@ print
 print pca.explained_variance_ratio_.sum()
 print
 print
+'''
+
+while (True):
+    if (tempSum < percent_covariance_to_account_for):
+        tempSum = tempSum + pca.explained_variance_ratio_[component]
+        component=component+1
+        
+    if (tempSum + pca.explained_variance_ratio_[component] > percent_covariance_to_account_for):
+        component = component - 1
+        break
+    
+print tempSum
+print component
+
+selected_components = pca.components_[:,0:component]
+#print selected_components
+
+sum_lf_components = abs(selected_components).mean(axis = 1)
+print sum_lf_components
+print sum_lf_components.shape
+
+features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[k])
+percent_dimension_reduction = 0.7
+
+features = sorted(features[:int(percent_dimension_reduction * len(features))])
+print features
+
+
+"""
 print pca.explained_variance_
 print
 print
@@ -91,3 +125,4 @@ print pca_trans
 print
 print
 print pca.get_params()
+"""
