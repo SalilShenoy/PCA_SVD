@@ -143,7 +143,7 @@ print len(features)
 #print features
 print
 
-#Data using new shortlisted features according threshold values
+#8. Data using new shortlisted features according threshold values
 X = X[:,features]
 X_test = X_test[:,features]
 
@@ -160,10 +160,7 @@ num_class_0_train = list(y_train).count(0)
 num_class_1_train = list(y_train).count(1)
 cv_size_train = min(num_class_0_train, num_class_1_train)
 
-num_class_0_test = list(y_test).count(0)
-num_class_1_test = list(y_test).count(1)
-cv_size_test = min(num_class_0_test, num_class_1_test)
-
+#9. Using SVM for classification
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y_train,random_state=0)
 #print "X_train shape =", X_train.shape, "  y_train shape=", y_train.shape
 #print "X_test shape =", X_test.shape, "  y_test shape=", y_test.shape
@@ -172,6 +169,7 @@ clf = svm.SVC(kernel='rbf', C=1, gamma = 0.0, degree = 3.0, coef0 = 0.0).fit(X_t
 
 #print "clf.get_params(deep=True) =", clf.get_params(deep=True)
 
+#10. Accuracy
 print
 print
 print ' TEST DATA '
@@ -188,5 +186,6 @@ print "clf.score(X_train, y_train) = {0}%".format(int((clf.score(X_train, y_trai
 print "clf.predict(X_train) = ", clf.predict(X_train)
 print "clf.decision_function(X_train) = ", clf.decision_function(X_train)
 
+#11. List of Features used in the final model 
 print ' List of features '
 print lambda f: features, header_test[features]
