@@ -22,6 +22,7 @@ def make_sure_isnumber(n, row_index, col_index, compound, header, nan_locs):
     except ValueError:
         return 0.
 
+#Function to Filter, Clean Data
 def read_data(cr, data, data_header):
     for row in cr:
         data_row = row[3:]
@@ -41,13 +42,11 @@ def read_data(cr, data, data_header):
                         
 #PCA
 def doPCA(data):
-    print
-    print 'data shape ===> ', data.shape
-    print
+    print ' Orignal Data Shape ' 
+    print data.shape
     print
     number_components = min(data.shape[0], data.shape[1])
     pca = PCA(n_components = number_components)
-    #pca = PCA()
     pca.fit(data)
     return pca
     
@@ -56,7 +55,8 @@ try:
     cr = csv.reader(open("BRAF_train_moe_class.csv"))
 except IOError:
     raise IOError("Problems locating or opening the .csv file named 'BRAF_train_moe_class.csv' were encountered.")
-    
+
+#2. Read the BRAF test data    
 try:
     test = csv.reader(open("BRAF_test_moe_class.csv"))
 except IOError:
@@ -101,8 +101,10 @@ percent_covariance_to_account_for = 0.7
 component = 0
 tempSum = 0.0
 
+#3. Feature Reduction after PCA 
 pca = doPCA(X)
 
+#4. Select number of components based on the covariance threshhold (0.7)
 while (True):
     if (tempSum < percent_covariance_to_account_for):
         tempSum = tempSum + pca.explained_variance_ratio_[component]
@@ -112,32 +114,43 @@ while (True):
         component = component - 1
         break
     
-print 'Temp Sum below threshold ==> ', tempSum
-print 'Number of PCs selected ==>', component
+print ' Temp Sum below threshold = ', tempSum
+print ' Number of PCs selected   = ', component
 
+#5. Selected Principal Componenets
 selected_components = pca.components_[:,0:component]
 #print selected_components
-
 sum_lf_components = abs(selected_components).mean(axis = 1)
-print sum_lf_components
-print sum_lf_components.shape
 
+print ' Loading Factors '
+print sum_lf_components
+print
+
+print ' Shape of List of Loading Factors '  
+print sum_lf_components.shape
+print
+
+#6. Sorting the features based on the loading factors
 features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[k])
 percent_dimension_reduction = 0.7
 
+#7. Selecting the features based on threshold for dimension (in this case n_samples)
 features = sorted(features[:int(percent_dimension_reduction * len(features))])
-print 'Features Selected ===> '
-print
+print 'Features Selected'
 print features
+print
 
 #Data using new shortlisted features according threshold values
 X = X[:,features]
 X_test = X_test[:,features]
 
-print
+print 'X with new list of features '
 print X
 print
+
+print ' X test with new list of features'
 print X_test
+print
 
 #SVM
 num_class_0_train = list(y_train).count(0)
@@ -162,6 +175,6 @@ print "clf.score(X_test, y_test) = {0}%".format(int((clf.score(X_test, y_test) *
 
 #print "======================="
 
-#print "clf.score(X_train, y_train) = {0}%".format(int((clf.score(X_train, y_train) * 10000))/100.)
+print "clf.score(X_train, y_train) = {0}%".format(int((clf.score(X_train, y_train) * 10000))/100.)
 #print "clf.predict(X_train) = ", clf.predict(X_train)
 #print "clf.decision_function(X_train) = ", clf.decision_function(X_train)
