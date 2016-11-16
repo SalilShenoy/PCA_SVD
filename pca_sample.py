@@ -131,7 +131,7 @@ print sum_lf_components.shape
 print
 
 #6. Sorting the features based on the loading factors
-features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[k])
+features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[k], reverse=True)
 percent_dimension_reduction = 0.7
 
 #7. Selecting the features based on threshold for dimension (in this case n_samples)
