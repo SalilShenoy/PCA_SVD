@@ -47,6 +47,7 @@ def doPCA(data):
     print
     number_components = min(data.shape[0], data.shape[1])
     pca = PCA(n_components = number_components)
+    #pca = PCA()
     pca.fit(data)
     return pca
     
@@ -132,25 +133,27 @@ print
 
 #6. Sorting the features based on the loading factors
 features = sorted(range(len(sum_lf_components)), key=lambda k:sum_lf_components[k], reverse=True)
+
 percent_dimension_reduction = 0.7
 
 #7. Selecting the features based on threshold for dimension (in this case n_samples)
 features = sorted(features[:int(percent_dimension_reduction * len(features))])
 print 'Features Selected'
-print features
+print len(features)
+#print features
 print
 
 #Data using new shortlisted features according threshold values
 X = X[:,features]
 X_test = X_test[:,features]
 
-print 'X with new list of features '
-print X
-print
+#print 'X with new list of features '
+#print X
+#print
 
-print ' X test with new list of features'
-print X_test
-print
+#print ' X test with new list of features'
+#print X_test
+#print
 
 #SVM
 num_class_0_train = list(y_train).count(0)
@@ -162,19 +165,28 @@ num_class_1_test = list(y_test).count(1)
 cv_size_test = min(num_class_0_test, num_class_1_test)
 
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y_train,random_state=0)
-print "X_train shape =", X_train.shape, "  y_train shape=", y_train.shape
-print "X_test shape =", X_test.shape, "  y_test shape=", y_test.shape
-print
+#print "X_train shape =", X_train.shape, "  y_train shape=", y_train.shape
+#print "X_test shape =", X_test.shape, "  y_test shape=", y_test.shape
+#print
 clf = svm.SVC(kernel='rbf', C=1, gamma = 0.0, degree = 3.0, coef0 = 0.0).fit(X_train, y_train)
 
 #print "clf.get_params(deep=True) =", clf.get_params(deep=True)
 
+print
+print
+print ' TEST DATA '
 print "clf.score(X_test, y_test) = {0}%".format(int((clf.score(X_test, y_test) * 10000))/100.)
-#print "clf.predict(X_test) = ", clf.predict(X_test)
-#print "clf.decision_function(X_test) = ", clf.decision_function(X_test)
+print "clf.predict(X_test) = ", clf.predict(X_test)
+print "clf.decision_function(X_test) = ", clf.decision_function(X_test)
 
 #print "======================="
 
+print
+print
+print ' TRAIN DATA '
 print "clf.score(X_train, y_train) = {0}%".format(int((clf.score(X_train, y_train) * 10000))/100.)
-#print "clf.predict(X_train) = ", clf.predict(X_train)
-#print "clf.decision_function(X_train) = ", clf.decision_function(X_train)
+print "clf.predict(X_train) = ", clf.predict(X_train)
+print "clf.decision_function(X_train) = ", clf.decision_function(X_train)
+
+print ' List of features '
+print lambda f: features, header_test[features]
