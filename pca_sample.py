@@ -5,7 +5,7 @@
 import csv
 import numpy as np
 from sklearn import preprocessing, cross_validation, svm
-from sklearn.metrics import f1_score,roc_curve, auc
+from sklearn.metrics import f1_score,roc_curve, auc, precision_recall_fscore_support
 from sklearn.decomposition import PCA 
 from sklearn.preprocessing import label_binarize 
 from sklearn.multiclass import OneVsRestClassifier 
@@ -278,3 +278,13 @@ print "clf.decision_function(X_train) = ", clf.decision_function(X_train)
 #11. List of Features used in the final model 
 print ' List of features '
 print lambda f: features, header_test[features]
+
+y_pred = clf.predict(X_test)
+print "f1_score(macro) = ", f1_score(y_test, y_pred, average='macro') 
+print "f1_score(micro) = ",f1_score(y_test, y_pred, average='micro') 
+print "f1_score(weighted) = ", f1_score(y_test, y_pred, average='weighted') 
+print "f1_score(avg=None) = ", f1_score(y_test, y_pred, average=None)
+
+print 'Precision Recall Fscore (macro)' , precision_recall_fscore_support(y_test, y_pred, average='macro')
+print 'Precision Recall Fscore (micro)' , precision_recall_fscore_support(y_test, y_pred, average='micro')
+print 'Precision Recall Fscore (weighted)' , precision_recall_fscore_support(y_test, y_pred, average='weighted')
